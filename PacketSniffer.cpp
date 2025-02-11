@@ -1,4 +1,5 @@
-#include "PacketSniffer.h"
+#include "PacketSniffer.hpp"
+
 
 
 std::string PacketSniffer::create_stream_key(const sniff_ip* ip, uint16_t src_port, uint16_t dst_port)
@@ -10,9 +11,9 @@ std::string PacketSniffer::create_stream_key(const sniff_ip* ip, uint16_t src_po
 		std::to_string(dst_port);
 }
 
-
-void PacketSniffer::get_packet(u_char* args, const pcap_pkthdr* header, const u_char* packet, PacketSniffer* sniffer)
-{
+void PacketSniffer::get_packet(u_char* args,const pcap_pkthdr* header, const u_char* packet, PacketSniffer* sniffer)
+{	(void) args;
+	(void) header;
 	const sniff_ip* ip = (sniff_ip*)(packet + SIZE_ETHERNET);
 	int size_ip = IP_HL(ip) * 4;
 	if (size_ip < 20) return;
@@ -57,6 +58,7 @@ const char* PacketSniffer::get_name_by_id(const int interface_number)
 		}
 		count++;
 	}
+	return nullptr;
 }
 
 
@@ -84,6 +86,7 @@ void PacketSniffer::show_interfaces() const
 			<< (d->description ? d->description : d->name)
 			<< "\n";
 	}
+	return; 
 }
 
 int PacketSniffer::init_live_handler(const int interface_number)
@@ -110,6 +113,7 @@ int PacketSniffer::init_live_handler(const int interface_number)
 	return 0;
 }
 
+
 int PacketSniffer::init_file_handler(std::string file_name)
 {
 	handle = pcap_open_offline(file_name.c_str(), errbuf);
@@ -131,7 +135,6 @@ int PacketSniffer::init_file_handler(std::string file_name)
 	pcap_close(handle);
 	return 0;
 }
-
 void PacketSniffer::write_to_csv() const
 {
 	std::ofstream file("stream_stats.csv");
